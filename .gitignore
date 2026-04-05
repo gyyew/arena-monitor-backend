@@ -1,0 +1,22 @@
+# Build
+target/
+build/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backend
+**/target/
+**/.idea/
+backend/**/*.log
