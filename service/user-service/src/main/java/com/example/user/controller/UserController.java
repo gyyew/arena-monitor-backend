@@ -18,9 +18,9 @@ public class UserController {
 
     @PostMapping("/register")
     public Result<User> register(
-            @RequestParam @NotBlank String username,
-            @RequestParam @NotBlank String password,
-            @RequestParam(required = false) String phone) {
+            @RequestParam("username") @NotBlank String username,
+            @RequestParam("password") @NotBlank String password,
+            @RequestParam(value = "phone", required = false) String phone) {
         try {
             User user = userService.register(username, password, phone);
             return Result.success(user);
@@ -31,8 +31,8 @@ public class UserController {
 
     @PostMapping("/login")
     public Result<String> login(
-            @RequestParam @NotBlank String username,
-            @RequestParam @NotBlank String password) {
+            @RequestParam("username") @NotBlank String username,
+            @RequestParam("password") @NotBlank String password) {
         try {
             String token = userService.login(username, password);
             return Result.success(token);
@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @GetMapping("/{username}")
-    public Result<User> getUser(@PathVariable String username) {
+    public Result<User> getUser(@PathVariable("username") String username) {
         User user = userService.findByUsername(username);
         if (user == null) {
             return Result.error(404, "User not found");
