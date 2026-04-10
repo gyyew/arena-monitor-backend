@@ -1,0 +1,70 @@
+version: '3.8'
+
+networks:
+  my-cloud:
+    driver: bridge
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    networks:
+      - my-cloud
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: --default-authentication-plugin=mysql_native_password
+
+  nacos:
+    image: nacos/nacos-server:v2.4.0
+    container_name: nacos
+    environment:
+      MODE: standalone
+      MYSQL_SERVICE_HOST: mysql
+      MYSQL_SERVICE_PORT: 3306
+      MYSQL_SERVICE_DB_NAME: nacos_config
+      MYSQL_SERVICE_USER: root
+      MYSQL_SERVICE_PASSWORD: root
+      MYSQL_SERVICE_URL: jdbc:mysql://mysql:3306/nacos_config?allowPublicKeyRetrieval=true&characterEncoding=utf8
+      NACOS_AUTH_ENABLE: "false"
+      NACOS_AUTH_TOKEN: SecretKey012345678901234567890123456789012345678901234567890123456789
+      NACOS_AUTH_IDENTITY_KEY: serverIdentity
+      NACOS_AUTH_IDENTITY_VALUE: security
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    networks:
+      - my-cloud
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  seata:
+    image: seataio/seata-server:2.0.0
+    container_name: seata
+    environment:
+      SEATA_IP: seata
+      SEATA_PORT: 8091
+      STORE_MODE: db
+      NACOS_APPLICATION: seata-server
+      NACOS_URL: nacos:8848
+      NACOS_NAMESPACE: ""
+      NACOS_GROUP: SEATA_GROUP
+      MYSQL_SERVICE_HOST: mysql
+      MYSQL_SERVICE_PORT: 3306
+      MYSQL_SERVICE_DB_NAME: seata_server
+      MYSQL_SERVICE_USER: root
+      MYSQL_SERVICE_PASSWORD: root
+    ports:
+      - "8091:8091"
+      - "7091:7091"
+    networks:
+      - my-cloud
+    depends_on:
+      - nacos
