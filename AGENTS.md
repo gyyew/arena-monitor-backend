@@ -2,14 +2,14 @@
 
 ## Project Overview
 
-This is a Java 17 microservices backend project using Spring Boot 3.2.6, Spring Cloud 2023.0.2, and MyBatis-Plus. The project is a Maven multi-module project.
+This is a Java 17 microservices backend project using Spring Boot 3.2.6, Spring Cloud 2023.0.2, Spring Cloud Alibaba 2023.0.1.0 (Nacos), and MyBatis-Plus. The project is a Maven multi-module project.
 
 ## Project Structure
 
 ```
 backend/
-├── pom.xml                          # Parent POM
-├── common/                          # Common modules
+├── pom.xml                    # Parent POM
+├── common/                   # Common modules (6 total)
 │   ├── common-core/
 │   ├── common-datasource/
 │   ├── common-feign/
@@ -17,9 +17,8 @@ backend/
 │   ├── common-redis/
 │   └── common-security/
 ├── service/
-│   └── user-service/               # User microservice
-└── infrastructure/
-    └── gateway/                    # API Gateway
+│   └── user-service/       # User microservice
+└── infrastructure/         # (compiled artifacts only, no source)
 ```
 
 ## Build Commands
@@ -135,17 +134,20 @@ Configuration is in `service/user-service/src/main/resources/application.yml`:
 - Nacos service discovery
 - Server port
 
+### Infrastructure
+Run `docker-compose up` to start MySQL, Nacos (service discovery), and Seata (distributed事务):
+- MySQL: `localhost:3306` (root/root)
+- Nacos: `localhost:8848` (nacos/nacos)
+- Seata: `localhost:8091`
+
+**Nacos must be running before starting the app.**
+
 ### Environment Variables
 - `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`
 - `SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR`
 
 ## VS Code Settings
-The project has `.vscode/settings.json` with:
-```json
-{
-    "java.compile.nullAnalysis.mode": "automatic"
-}
-```
+The project has `.vscode/settings.json` with Java null analysis enabled.
 
 ## Adding New Services
 
