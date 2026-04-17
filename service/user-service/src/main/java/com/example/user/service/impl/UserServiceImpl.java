@@ -4,17 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.user.entity.User;
 import com.example.user.mapper.UserMapper;
 import com.example.user.service.UserService;
+import com.example.user.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
+    private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
@@ -45,7 +45,8 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Wrong password");
         }
 
-        return "Bearer " + UUID.randomUUID().toString();
+        // Generate real JWT token
+        return jwtUtil.generateToken(user.getId(), username);
     }
 
     @Override

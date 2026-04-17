@@ -5,11 +5,13 @@ import com.example.user.entity.User;
 import com.example.user.service.UserService;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/v1/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @Validated
 public class UserController {
@@ -45,6 +47,13 @@ public class UserController {
         }
     }
 
+    @PostMapping("/logout")
+    public Result<String> logout() {
+        // Clear security context - token invalidation handled client-side
+        SecurityContextHolder.clearContext();
+        return Result.success("Logged out successfully");
+    }
+
     @GetMapping("/{username}")
     public Result<User> getUser(@PathVariable("username") String username) {
         User user = userService.findByUsername(username);
@@ -53,5 +62,18 @@ public class UserController {
         }
         user.setPassword(null);
         return Result.success(user);
+    }
+
+    /**
+     * Get current authenticated user info
+     */
+    @GetMapping("/me")
+    public Result<Long> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() != null) {
+            Long userId = (Long) authentication.getPrincipal();
+            return Result.success(userId);
+        }
+        return Result.error(401, "Not authenticated");
     }
 }

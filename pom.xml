@@ -20,6 +20,7 @@
         <module>common/common-redis</module>
         <module>common/common-security</module>
         <module>service/user-service</module>
+        <module>service/court-service</module>
     </modules>
 
     <properties>

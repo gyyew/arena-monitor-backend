@@ -31,3 +31,8 @@ spring.cloud.nacos.config:
   server-addr: localhost:8848
   namespace: ''
   group: DEFAULT_GROUP
+
+# JWT Configuration
+jwt:
+  secret: mySecretKeyForJWTTokenGenerationMustBeLongEnough256Bits!
+  expiration: 86400000  # 24 hours in milliseconds

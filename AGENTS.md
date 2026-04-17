@@ -3,7 +3,17 @@
 ## Project Overview
 
 This is a Java 17 microservices backend project using Spring Boot 3.2.6, Spring Cloud 2023.0.2, Spring Cloud Alibaba 2023.0.1.0 (Nacos), and MyBatis-Plus. The project is a Maven multi-module project.
-
+Core Framework: React 18
+Routing: React Router DOM 6
+HTTP Client: Axios
+UI Library: Ant Design (antd)
+Build Tool: Vite 5 + @vitejs/plugin-react
+Language: Java 17
+Backend Framework: Spring Boot 3.2.6
+Microservices: Spring Cloud 2023.0.2, Spring Cloud Alibaba 2023.0.1.0
+Service Discovery & Configuration: Nacos
+ORM Framework: MyBatis-Plus
+Build Tool: Maven multi-module project
 ## Project Structure
 
 ```
