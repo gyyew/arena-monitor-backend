@@ -4,9 +4,17 @@ import com.example.user.entity.User;
 
 public interface UserService {
 
-    User register(String username, String password, String phone);
+    User register(String phone, String password, String nickname);
 
-    String login(String username, String password);
+    String login(String phone, String password);
 
-    User findByUsername(String username);
+    User findByPhone(String phone);
+
+    User findByUserId(Integer userId);
+
+    User updateUserInfo(Integer userId, String nickname, String avatar, String sportPreference, String intro);
+
+    boolean changePassword(Integer userId, String oldPassword, String newPassword);
+
+    boolean disableUser(Integer userId, Integer status);
 }

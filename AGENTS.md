@@ -6,7 +6,7 @@ This is a Java 17 microservices backend project using Spring Boot 3.2.6, Spring 
 Core Framework: React 18
 Routing: React Router DOM 6
 HTTP Client: Axios
-UI Library: Ant Design (antd)
+UI Library: Ant Design (antd) and tailwind
 Build Tool: Vite 5 + @vitejs/plugin-react
 Language: Java 17
 Backend Framework: Spring Boot 3.2.6

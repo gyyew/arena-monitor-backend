@@ -35,18 +35,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(token) && jwtUtil.validateToken(token)) {
             // Parse token and set security context
             Claims claims = jwtUtil.parseToken(token);
-            String username = claims.getSubject();
-            Long userId = claims.get("userId", Long.class);
+            String nickname = claims.getSubject();
+            Integer userId = claims.get("userId", Integer.class);
+            Integer role = claims.get("role", Integer.class);
             
-            // Create authentication token with user details
+            // Create authentication token with user details and role
+            String roleName = role == 1 ? "ROLE_ADMIN" : "ROLE_USER";
             UsernamePasswordAuthenticationToken authentication = 
                 new UsernamePasswordAuthenticationToken(
                     userId, 
                     null, 
-                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+                    Collections.singletonList(new SimpleGrantedAuthority(roleName))
                 );
             
-            authentication.setDetails(username);
+            authentication.setDetails(nickname);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         

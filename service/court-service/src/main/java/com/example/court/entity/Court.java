@@ -3,7 +3,6 @@ package com.example.court.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -16,22 +15,24 @@ public class Court implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    @TableId(value = "court_id", type = IdType.AUTO)
+    private Integer courtId;
 
-    @TableField("court_number")
-    private Integer courtNumber;
+    @TableField("court_name")
+    private String courtName;
 
-    @TableField("status")
-    private String status;
+    @TableField("court_type")
+    private String courtType;
 
-    @TableField("image_url")
-    private String imageUrl;
+    @TableField("location")
+    private String location;
+
+    @TableField("device_id")
+    private String deviceId;
+
+    @TableField("create_time")
+    private LocalDateTime createTime;
 
     @TableField("update_time")
     private LocalDateTime updateTime;
-
-    @TableLogic
-    @TableField("deleted")
-    private Integer deleted;
 }

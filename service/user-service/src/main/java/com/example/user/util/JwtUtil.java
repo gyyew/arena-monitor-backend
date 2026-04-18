@@ -24,19 +24,20 @@ public class JwtUtil {
     private Long expiration; // 24 hours in milliseconds
 
     /**
-     * Generate JWT token with username and userId claims
+     * Generate JWT token with userId, nickname and role claims
      */
-    public String generateToken(Long userId, String username) {
+    public String generateToken(Integer userId, String nickname, Integer role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
-        claims.put("username", username);
+        claims.put("nickname", nickname);
+        claims.put("role", role);
 
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
                 .claims(claims)
-                .subject(username)
+                .subject(nickname)
                 .issuedAt(now)
                 .expiration(expirationDate)
                 .signWith(getSigningKey())
@@ -55,17 +56,24 @@ public class JwtUtil {
     }
 
     /**
-     * Extract username from token
+     * Extract nickname from token
      */
-    public String getUsernameFromToken(String token) {
+    public String getNicknameFromToken(String token) {
         return parseToken(token).getSubject();
     }
 
     /**
      * Extract userId from token
      */
-    public Long getUserIdFromToken(String token) {
-        return parseToken(token).get("userId", Long.class);
+    public Integer getUserIdFromToken(String token) {
+        return parseToken(token).get("userId", Integer.class);
+    }
+
+    /**
+     * Extract role from token
+     */
+    public Integer getRoleFromToken(String token) {
+        return parseToken(token).get("role", Integer.class);
     }
 
     /**

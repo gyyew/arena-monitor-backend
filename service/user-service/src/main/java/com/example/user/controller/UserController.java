@@ -20,11 +20,11 @@ public class UserController {
 
     @PostMapping("/register")
     public Result<User> register(
-            @RequestParam("username") @NotBlank String username,
+            @RequestParam("phone") @NotBlank String phone,
             @RequestParam("password") @NotBlank String password,
-            @RequestParam(value = "phone", required = false) String phone) {
+            @RequestParam("nickname") @NotBlank String nickname) {
         try {
-            User user = userService.register(username, password, phone);
+            User user = userService.register(phone, password, nickname);
             return Result.success(user);
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
@@ -33,10 +33,10 @@ public class UserController {
 
     @PostMapping("/login")
     public Result<String> login(
-            @RequestParam("username") @NotBlank String username,
+            @RequestParam("phone") @NotBlank String phone,
             @RequestParam("password") @NotBlank String password) {
         try {
-            String token = userService.login(username, password);
+            String token = userService.login(phone, password);
             return Result.success(token);
         } catch (RuntimeException e) {
             String msg = e.getMessage();
@@ -54,26 +54,88 @@ public class UserController {
         return Result.success("Logged out successfully");
     }
 
-    @GetMapping("/{username}")
-    public Result<User> getUser(@PathVariable("username") String username) {
-        User user = userService.findByUsername(username);
-        if (user == null) {
-            return Result.error(404, "User not found");
-        }
-        user.setPassword(null);
-        return Result.success(user);
-    }
-
-    /**
-     * Get current authenticated user info
-     */
     @GetMapping("/me")
-    public Result<Long> getCurrentUser() {
+    public Result<User> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() != null) {
-            Long userId = (Long) authentication.getPrincipal();
-            return Result.success(userId);
+            Integer userId = (Integer) authentication.getPrincipal();
+            User user = userService.findByUserId(userId);
+            if (user == null) {
+                return Result.error(404, "User not found");
+            }
+            user.setPassword(null);
+            return Result.success(user);
         }
         return Result.error(401, "Not authenticated");
+    }
+
+    @PutMapping("/me")
+    public Result<User> updateUserInfo(
+            @RequestParam("nickname") @NotBlank String nickname,
+            @RequestParam(value = "avatar", required = false) String avatar,
+            @RequestParam(value = "sportPreference", required = false) String sportPreference,
+            @RequestParam(value = "intro", required = false) String intro) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || authentication.getPrincipal() == null) {
+                return Result.error(401, "Not authenticated");
+            }
+            Integer userId = (Integer) authentication.getPrincipal();
+            User user = userService.updateUserInfo(userId, nickname, avatar, sportPreference, intro);
+            return Result.success(user);
+        } catch (RuntimeException e) {
+            return Result.error(400, e.getMessage());
+        }
+    }
+
+    @PutMapping("/me/password")
+    public Result<String> changePassword(
+            @RequestParam("oldPassword") @NotBlank String oldPassword,
+            @RequestParam("newPassword") @NotBlank String newPassword) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || authentication.getPrincipal() == null) {
+                return Result.error(401, "Not authenticated");
+            }
+            Integer userId = (Integer) authentication.getPrincipal();
+            boolean success = userService.changePassword(userId, oldPassword, newPassword);
+            if (success) {
+                return Result.success("Password changed successfully");
+            } else {
+                return Result.error(400, "Password change failed");
+            }
+        } catch (RuntimeException e) {
+            return Result.error(400, e.getMessage());
+        }
+    }
+
+    @PutMapping("/admin/disable/{userId}")
+    public Result<String> disableUser(
+            @PathVariable("userId") Integer userId,
+            @RequestParam("status") Integer status) {
+        try {
+            boolean success = userService.disableUser(userId, status);
+            if (success) {
+                return Result.success("User status updated successfully");
+            } else {
+                return Result.error(400, "User status update failed");
+            }
+        } catch (RuntimeException e) {
+            return Result.error(400, e.getMessage());
+        }
+    }
+
+    @GetMapping("/admin/{userId}")
+    public Result<User> getUserById(@PathVariable("userId") Integer userId) {
+        try {
+            User user = userService.findByUserId(userId);
+            if (user == null) {
+                return Result.error(404, "User not found");
+            }
+            user.setPassword(null);
+            return Result.success(user);
+        } catch (RuntimeException e) {
+            return Result.error(400, e.getMessage());
+        }
     }
 }
