@@ -20,4 +20,12 @@ public interface PostService {
     IPage<Post> getUserPosts(Integer userId, int page, int size);
 
     boolean auditPost(Integer postId, Integer auditStatus, String rejectReason);
+
+    /**
+     * Like a post
+     * @param postId post ID to like
+     * @param userId user ID who likes the post
+     * @return true if liked successfully
+     */
+    boolean likePost(Integer postId, Integer userId);
 }

@@ -1,5 +1,7 @@
 package com.example.user.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.user.common.Result;
 import com.example.user.entity.User;
 import com.example.user.service.UserService;
@@ -9,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -134,6 +138,49 @@ public class UserController {
             }
             user.setPassword(null);
             return Result.success(user);
+        } catch (RuntimeException e) {
+            return Result.error(400, e.getMessage());
+        }
+    }
+
+    /**
+     * Get user list with pagination and search
+     * @param page page number, default 1
+     * @param size page size, default 10
+     * @param keyword search keyword for nickname or phone
+     * @param status user status filter, optional
+     * @return paginated user list
+     */
+    @GetMapping
+    public Result<IPage<User>> getUserList(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "status", required = false) Integer status) {
+        try {
+            IPage<User> userPage = userService.getUserList(page, size, keyword, status);
+            // Clear password for security
+            userPage.getRecords().forEach(u -> u.setPassword(null));
+            return Result.success(userPage);
+        } catch (RuntimeException e) {
+            return Result.error(400, e.getMessage());
+        }
+    }
+
+    /**
+     * Delete user by ID (admin only)
+     * @param userId user ID to delete
+     * @return success message
+     */
+    @DeleteMapping("/admin/{userId}")
+    public Result<String> deleteUser(@PathVariable("userId") Integer userId) {
+        try {
+            boolean success = userService.deleteUser(userId);
+            if (success) {
+                return Result.success("User deleted successfully");
+            } else {
+                return Result.error(404, "User not found");
+            }
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
         }

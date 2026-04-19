@@ -9,13 +9,17 @@ spring:
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+      config:
+        enabled: false
+    compatibility-verifier:
+      enabled: false
 
 mybatis-plus:
   mapper-locations: classpath:mapper/**/*.xml
   type-aliases-package: com.example.post.entity
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-
-nacos:
-  discovery:
-    server-addr: localhost:8848

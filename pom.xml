@@ -21,6 +21,7 @@
         <module>common/common-security</module>
         <module>service/user-service</module>
         <module>service/court-service</module>
+        <module>service/post-service</module>
     </modules>
 
     <properties>

@@ -88,4 +88,24 @@ public class PostServiceImpl implements PostService {
         int result = postMapper.auditPost(postId, auditStatus, rejectReason);
         return result > 0;
     }
+
+    @Override
+    public boolean likePost(Integer postId, Integer userId) {
+        Post post = postMapper.selectById(postId);
+        if (post == null) {
+            throw new RuntimeException("Post not found");
+        }
+        
+        // Check if already liked by this user
+        int liked = postMapper.checkUserLike(postId, userId);
+        if (liked > 0) {
+            throw new RuntimeException("Already liked this post");
+        }
+        
+        // Add like record
+        postMapper.insertUserLike(postId, userId);
+        
+        // Increment post like count
+        return postMapper.incrementLikeCount(postId) > 0;
+    }
 }

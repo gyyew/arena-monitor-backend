@@ -44,4 +44,7 @@ public class Post implements Serializable {
 
     @TableField("update_time")
     private LocalDateTime updateTime;
+
+    @TableField("like_count")
+    private Integer likeCount;
 }

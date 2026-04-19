@@ -1,6 +1,9 @@
 package com.example.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.user.entity.User;
 import com.example.user.mapper.UserMapper;
 import com.example.user.service.UserService;
@@ -115,6 +118,38 @@ public class UserServiceImpl implements UserService {
 
         user.setStatus(status);
         return userMapper.updateById(user) > 0;
+    }
+
+    @Override
+    public IPage<User> getUserList(int page, int size, String keyword, Integer status) {
+        Page<User> pageInfo = new Page<>(page, size);
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        
+        // Add keyword search condition (search in nickname or phone)
+        if (StringUtils.isNotBlank(keyword)) {
+            wrapper.and(w -> w.like(User::getNickname, keyword)
+                    .or()
+                    .like(User::getPhone, keyword));
+        }
+        
+        // Add status filter
+        if (status != null) {
+            wrapper.eq(User::getStatus, status);
+        }
+        
+        // Order by create time desc
+        wrapper.orderByDesc(User::getCreateTime);
+        
+        return userMapper.selectPage(pageInfo, wrapper);
+    }
+
+    @Override
+    public boolean deleteUser(Integer userId) {
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        return userMapper.deleteById(userId) > 0;
     }
 
     // MD5加密

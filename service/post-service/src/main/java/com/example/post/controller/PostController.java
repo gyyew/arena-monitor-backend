@@ -136,4 +136,52 @@ public class PostController {
             return Result.error(400, e.getMessage());
         }
     }
+
+    /**
+     * Get audit list - posts pending for audit (auditStatus = 0)
+     * @param page page number, default 1
+     * @param size page size, default 10
+     * @param sportType sport type filter, optional
+     * @param keyword search keyword, optional
+     * @return paginated post list waiting for audit
+     */
+    @GetMapping("/audit-list")
+    public Result<IPage<Post>> getAuditList(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sportType", required = false) String sportType,
+            @RequestParam(value = "keyword", required = false) String keyword) {
+        try {
+            // auditStatus = 0 means pending for audit
+            IPage<Post> postList = postService.getPostList(page, size, sportType, keyword, 0);
+            return Result.success(postList);
+        } catch (RuntimeException e) {
+            return Result.error(400, e.getMessage());
+        }
+    }
+
+    /**
+     * Like a post
+     * @param postId post ID to like
+     * @return success message
+     */
+    @PostMapping("/{postId}/like")
+    public Result<String> likePost(@PathVariable("postId") Integer postId) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || authentication.getPrincipal() == null) {
+                return Result.error(401, "Not authenticated");
+            }
+            Integer userId = (Integer) authentication.getPrincipal();
+            
+            boolean success = postService.likePost(postId, userId);
+            if (success) {
+                return Result.success("Post liked successfully");
+            } else {
+                return Result.error(400, "Failed to like post");
+            }
+        } catch (RuntimeException e) {
+            return Result.error(400, e.getMessage());
+        }
+    }
 }
