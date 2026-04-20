@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: ${port}
   servlet:
     encoding:
       charset: UTF-8
@@ -8,10 +8,10 @@ server:
 
 spring:
   application:
-    name: user-service
+    name: ${serviceName}
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/micro_user?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&connectionCharacterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/${databaseName}?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&connectionCharacterEncoding=UTF-8
     username: root
     password: root
 
@@ -27,17 +27,15 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
 
+# Nacos Service Discovery Configuration
 spring.cloud.nacos.discovery:
   server-addr: localhost:8848
   namespace: ''
   group: DEFAULT_GROUP
 
+# Nacos Config Configuration
 spring.cloud.nacos.config:
   server-addr: localhost:8848
   namespace: ''
   group: DEFAULT_GROUP
-
-# JWT Configuration
-jwt:
-  secret: mySecretKeyForJWTTokenGenerationMustBeLongEnough256Bits!
-  expiration: 86400000  # 24 hours in milliseconds
+  file-extension: yaml

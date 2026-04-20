@@ -2,14 +2,20 @@ package com.example.post.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.post.common.Result;
+import com.example.post.common.UserResult;
+import com.example.post.dto.VerifyResponse;
 import com.example.post.entity.Post;
+import com.example.post.feign.UserServiceClient;
 import com.example.post.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Post Controller
+ * Handles CRUD operations for posts including create, update, delete, query, like, and audit
+ * All write operations require authentication via Feign token verification
+ */
 @RestController
 @RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
@@ -17,20 +23,50 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostService postService;
+    private final UserServiceClient userServiceClient;
 
+    /**
+     * Extract and validate user from Authorization header
+     * @param authorization Authorization header with Bearer token
+     * @return userId if token is valid, null otherwise
+     */
+    private Integer validateAndGetUserId(String authorization) {
+        if (authorization == null || authorization.isEmpty()) {
+            return null;
+        }
+        try {
+            UserResult<VerifyResponse> result = userServiceClient.verifyToken(authorization);
+            if (result != null && result.isSuccess() && result.getData() != null) {
+                return result.getData().getUserId();
+            }
+        } catch (Exception e) {
+            // Token verification failed
+        }
+        return null;
+    }
+
+    /**
+     * Create a new post
+     * Requires authentication via JWT token
+     * @param title post title
+     * @param content post content
+     * @param sportType sport type
+     * @param imageUrls optional image URLs
+     * @return created post
+     */
     @PostMapping
     public Result<Post> createPost(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
             @RequestParam("title") String title,
             @RequestParam("content") String content,
             @RequestParam("sportType") String sportType,
             @RequestParam(value = "imageUrls", required = false) String imageUrls) {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || authentication.getPrincipal() == null) {
-                return Result.error(401, "Not authenticated");
+            Integer userId = validateAndGetUserId(authorization);
+            if (userId == null) {
+                return Result.error(401, "Invalid or missing authentication token");
             }
-            Integer userId = (Integer) authentication.getPrincipal();
-            
+
             Post post = postService.createPost(userId, title, content, sportType, imageUrls);
             return Result.success(post);
         } catch (RuntimeException e) {
@@ -38,20 +74,30 @@ public class PostController {
         }
     }
 
+    /**
+     * Update an existing post
+     * Only the post author can update their own post
+     * @param postId post ID to update
+     * @param title new title
+     * @param content new content
+     * @param sportType new sport type
+     * @param imageUrls optional new image URLs
+     * @return updated post
+     */
     @PutMapping("/{postId}")
     public Result<Post> updatePost(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
             @PathVariable("postId") Integer postId,
             @RequestParam("title") String title,
             @RequestParam("content") String content,
             @RequestParam("sportType") String sportType,
             @RequestParam(value = "imageUrls", required = false) String imageUrls) {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || authentication.getPrincipal() == null) {
-                return Result.error(401, "Not authenticated");
+            Integer userId = validateAndGetUserId(authorization);
+            if (userId == null) {
+                return Result.error(401, "Invalid or missing authentication token");
             }
-            Integer userId = (Integer) authentication.getPrincipal();
-            
+
             Post post = postService.updatePost(postId, userId, title, content, sportType, imageUrls);
             return Result.success(post);
         } catch (RuntimeException e) {
@@ -59,15 +105,22 @@ public class PostController {
         }
     }
 
+    /**
+     * Delete a post
+     * Only the post author can delete their own post
+     * @param postId post ID to delete
+     * @return success message
+     */
     @DeleteMapping("/{postId}")
-    public Result<String> deletePost(@PathVariable("postId") Integer postId) {
+    public Result<String> deletePost(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @PathVariable("postId") Integer postId) {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || authentication.getPrincipal() == null) {
-                return Result.error(401, "Not authenticated");
+            Integer userId = validateAndGetUserId(authorization);
+            if (userId == null) {
+                return Result.error(401, "Invalid or missing authentication token");
             }
-            Integer userId = (Integer) authentication.getPrincipal();
-            
+
             boolean success = postService.deletePost(postId, userId);
             if (success) {
                 return Result.success("Post deleted successfully");
@@ -102,6 +155,33 @@ public class PostController {
         try {
             IPage<Post> postList = postService.getPostList(page, size, sportType, keyword, auditStatus);
             return Result.success(postList);
+        } catch (RuntimeException e) {
+            return Result.error(400, e.getMessage());
+        }
+    }
+
+    /**
+     * Like a post - toggle like status
+     * @param authorization Authorization header with Bearer token
+     * @param postId post ID to like/unlike
+     * @return result with like status message
+     */
+    @PostMapping("/{postId}/like")
+    public Result<String> likePost(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @PathVariable("postId") Integer postId) {
+        try {
+            Integer userId = validateAndGetUserId(authorization);
+            if (userId == null) {
+                return Result.error(401, "Invalid or missing authentication token");
+            }
+
+            boolean success = postService.likePost(postId, userId);
+            if (success) {
+                return Result.success("Liked successfully");
+            } else {
+                return Result.success("Unliked successfully");
+            }
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
         }
@@ -155,31 +235,6 @@ public class PostController {
             // auditStatus = 0 means pending for audit
             IPage<Post> postList = postService.getPostList(page, size, sportType, keyword, 0);
             return Result.success(postList);
-        } catch (RuntimeException e) {
-            return Result.error(400, e.getMessage());
-        }
-    }
-
-    /**
-     * Like a post
-     * @param postId post ID to like
-     * @return success message
-     */
-    @PostMapping("/{postId}/like")
-    public Result<String> likePost(@PathVariable("postId") Integer postId) {
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || authentication.getPrincipal() == null) {
-                return Result.error(401, "Not authenticated");
-            }
-            Integer userId = (Integer) authentication.getPrincipal();
-            
-            boolean success = postService.likePost(postId, userId);
-            if (success) {
-                return Result.success("Post liked successfully");
-            } else {
-                return Result.error(400, "Failed to like post");
-            }
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
         }

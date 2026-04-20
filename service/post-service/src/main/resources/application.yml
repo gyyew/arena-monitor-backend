@@ -1,11 +1,16 @@
 server:
   port: 8083
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
 spring:
   application:
     name: post-service
   datasource:
-    url: jdbc:mysql://localhost:3306/court_monitor?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/court_monitor?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&connectionCharacterEncoding=UTF-8
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -23,3 +28,24 @@ mybatis-plus:
   type-aliases-package: com.example.post.entity
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# Feign configuration
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 10000
+      user-service:
+        connectTimeout: 5000
+        readTimeout: 10000
+  circuitbreaker:
+    enabled: true
+  # Enable Feign client scanning
+  # This tells Spring to scan for @FeignClient annotated interfaces
+  default-path-matching:
+    pattern-service-id: .*-service
+
+logging:
+  level:
+    com.example.post.feign: DEBUG

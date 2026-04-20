@@ -3,8 +3,10 @@ package com.example.user.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.user.common.Result;
+import com.example.user.dto.VerifyResponse;
 import com.example.user.entity.User;
 import com.example.user.service.UserService;
+import com.example.user.util.JwtUtil;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -21,6 +23,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/register")
     public Result<User> register(
@@ -56,6 +59,53 @@ public class UserController {
         // Clear security context - token invalidation handled client-side
         SecurityContextHolder.clearContext();
         return Result.success("Logged out successfully");
+    }
+
+    /**
+     * Verify JWT token and return user information
+     * This endpoint is permitAll - no authentication required
+     * @param authorization Authorization header containing Bearer token
+     * @return user information if token is valid
+     */
+    @GetMapping("/verify")
+    public Result<VerifyResponse> verifyToken(
+            @RequestHeader(value = "Authorization", required = false) String authorization) {
+        // Check if Authorization header is present
+        if (authorization == null || authorization.isEmpty()) {
+            return Result.error(401, "Authorization header is missing");
+        }
+
+        // Extract token from Bearer format
+        String token;
+        if (authorization.startsWith("Bearer ")) {
+            token = authorization.substring(7);
+        } else {
+            token = authorization;
+        }
+
+        // Validate and parse token
+        if (!jwtUtil.validateToken(token)) {
+            return Result.error(401, "Invalid or expired token");
+        }
+
+        try {
+            // Extract user information from token
+            Integer userId = jwtUtil.getUserIdFromToken(token);
+            String nickname = jwtUtil.getNicknameFromToken(token);
+            Integer role = jwtUtil.getRoleFromToken(token);
+
+            // Get phone from database
+            User user = userService.findByUserId(userId);
+            if (user == null) {
+                return Result.error(404, "User not found");
+            }
+
+            // Build response
+            VerifyResponse response = new VerifyResponse(userId, nickname, role, user.getPhone());
+            return Result.success(response);
+        } catch (Exception e) {
+            return Result.error(401, "Token parsing failed: " + e.getMessage());
+        }
     }
 
     @GetMapping("/me")

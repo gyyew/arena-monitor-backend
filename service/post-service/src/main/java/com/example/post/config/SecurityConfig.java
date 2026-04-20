@@ -1,29 +1,28 @@
-package com.example.user.config;
+package com.example.post.config;
 
-import com.example.user.filter.JwtAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Spring Security 配置类
+ * 配置 post-service 的安全策略，允许公开访问帖子列表等只读API
+ */
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
+    /**
+     * 安全过滤器链配置
+     * - 禁用 CSRF
+     * - 使用无状态会话
+     * - 允许公开访问 GET 类型的帖子/评论API
+     * - 其他操作需要认证
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -31,11 +30,12 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/users/login", "/api/v1/users/register", "/api/v1/users/verify").permitAll()
-                .requestMatchers("/api/v1/users/**").authenticated()
+                // 允许公开访问的API
+                .requestMatchers("GET", "/api/v1/posts/**").permitAll()
+                .requestMatchers("GET", "/api/v1/comments/**").permitAll()
+                // 其他请求需要认证
                 .anyRequest().permitAll()
-            )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            );
         
         return http.build();
     }
