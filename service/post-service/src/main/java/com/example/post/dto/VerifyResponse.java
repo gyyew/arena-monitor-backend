@@ -16,7 +16,7 @@ public class VerifyResponse {
     /**
      * User ID
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * User nickname

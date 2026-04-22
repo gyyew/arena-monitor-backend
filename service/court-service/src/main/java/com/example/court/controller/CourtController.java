@@ -28,7 +28,7 @@ public class CourtController {
     }
 
     @GetMapping("/{courtId}")
-    public Result<Court> getCourt(@PathVariable("courtId") Integer courtId) {
+    public Result<Court> getCourt(@PathVariable("courtId") Long courtId) {
         Court court = courtService.getCourtById(courtId);
         if (court == null) {
             return Result.error(404, "Court not found");
@@ -47,7 +47,7 @@ public class CourtController {
     }
 
     @PutMapping("/{courtId}")
-    public Result<Court> updateCourt(@PathVariable("courtId") Integer courtId, @RequestBody Court court) {
+    public Result<Court> updateCourt(@PathVariable("courtId") Long courtId, @RequestBody Court court) {
         try {
             Court updatedCourt = courtService.updateCourt(courtId, court);
             return Result.success(updatedCourt);
@@ -57,7 +57,7 @@ public class CourtController {
     }
 
     @DeleteMapping("/{courtId}")
-    public Result<String> deleteCourt(@PathVariable("courtId") Integer courtId) {
+    public Result<String> deleteCourt(@PathVariable("courtId") Long courtId) {
         try {
             boolean success = courtService.deleteCourt(courtId);
             if (success) {
@@ -71,7 +71,7 @@ public class CourtController {
     }
 
     @GetMapping("/{courtId}/monitor/latest")
-    public Result<CourtMonitor> getLatestMonitorData(@PathVariable("courtId") Integer courtId) {
+    public Result<CourtMonitor> getLatestMonitorData(@PathVariable("courtId") Long courtId) {
         CourtMonitor monitorData = courtService.getLatestMonitorData(courtId);
         if (monitorData == null) {
             return Result.error(404, "No monitor data found");
@@ -81,7 +81,7 @@ public class CourtController {
 
     @GetMapping("/{courtId}/monitor/history")
     public Result<IPage<CourtMonitor>> getHistoryMonitorData(
-            @PathVariable("courtId") Integer courtId,
+            @PathVariable("courtId") Long courtId,
             @RequestParam("startTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
             @RequestParam("endTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime,
             @RequestParam(value = "page", defaultValue = "1") int page,

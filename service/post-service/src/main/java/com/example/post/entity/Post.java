@@ -3,6 +3,7 @@ package com.example.post.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -16,10 +17,10 @@ public class Post implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "post_id", type = IdType.AUTO)
-    private Integer postId;
+    private Long postId;
 
     @TableField("user_id")
-    private Integer userId;
+    private Long userId;
 
     @TableField("title")
     private String title;
@@ -45,6 +46,7 @@ public class Post implements Serializable {
     @TableField("update_time")
     private LocalDateTime updateTime;
 
-    @TableField("like_count")
-    private Integer likeCount;
+    @TableLogic
+    @TableField("deleted")
+    private Integer deleted;
 }

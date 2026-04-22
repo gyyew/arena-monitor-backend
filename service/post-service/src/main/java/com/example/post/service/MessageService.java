@@ -7,17 +7,17 @@ import java.util.List;
 
 public interface MessageService {
 
-    Message sendMessage(Integer sendUserId, Integer receiveUserId, String content);
+    Message sendMessage(Long sendUserId, Long receiveUserId, String content);
 
-    IPage<Message> getUserMessages(Integer userId, Integer otherUserId, int page, int size);
+    IPage<Message> getUserMessages(Long userId, Long otherUserId, int page, int size);
 
-    int getUnreadMessageCount(Integer userId);
+    int getUnreadMessageCount(Long userId);
 
-    boolean markMessageAsRead(Integer messageId);
+    boolean markMessageAsRead(Long messageId);
 
-    boolean markAllMessagesAsRead(Integer userId, Integer otherUserId);
+    boolean markAllMessagesAsRead(Long userId, Long otherUserId);
 
-    boolean deleteMessage(Integer messageId);
+    boolean deleteMessage(Long messageId);
 
-    List<Message> getConversationList(Integer userId);
+    List<Message> getConversationList(Long userId);
 }

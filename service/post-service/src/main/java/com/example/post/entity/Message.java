@@ -16,13 +16,13 @@ public class Message implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "message_id", type = IdType.AUTO)
-    private Integer messageId;
+    private Long messageId;
 
     @TableField("send_user_id")
-    private Integer sendUserId;
+    private Long sendUserId;
 
     @TableField("receive_user_id")
-    private Integer receiveUserId;
+    private Long receiveUserId;
 
     @TableField("content")
     private String content;

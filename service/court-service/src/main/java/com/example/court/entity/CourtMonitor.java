@@ -16,10 +16,10 @@ public class CourtMonitor implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "monitor_id", type = IdType.AUTO)
-    private Integer monitorId;
+    private Long monitorId;
 
     @TableField("court_id")
-    private Integer courtId;
+    private Long courtId;
 
     @TableField("occupy_status")
     private Integer occupyStatus;
@@ -35,4 +35,7 @@ public class CourtMonitor implements Serializable {
 
     @TableField("identify_status")
     private Integer identifyStatus;
+
+    @TableField("create_time")
+    private LocalDateTime createTime;
 }

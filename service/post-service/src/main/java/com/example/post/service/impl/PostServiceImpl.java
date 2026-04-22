@@ -15,7 +15,7 @@ public class PostServiceImpl implements PostService {
     private final PostMapper postMapper;
 
     @Override
-    public Post createPost(Integer userId, String title, String content, String sportType, String imageUrls) {
+    public Post createPost(Long userId, String title, String content, String sportType, String imageUrls) {
         Post post = new Post();
         post.setUserId(userId);
         post.setTitle(title);
@@ -29,7 +29,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post updatePost(Integer postId, Integer userId, String title, String content, String sportType, String imageUrls) {
+    public Post updatePost(Long postId, Long userId, String title, String content, String sportType, String imageUrls) {
         Post post = postMapper.selectById(postId);
         if (post == null) {
             throw new RuntimeException("Post not found");
@@ -53,7 +53,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public boolean deletePost(Integer postId, Integer userId) {
+    public boolean deletePost(Long postId, Long userId) {
         Post post = postMapper.selectById(postId);
         if (post == null) {
             throw new RuntimeException("Post not found");
@@ -67,7 +67,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post getPostById(Integer postId) {
+    public Post getPostById(Long postId) {
         return postMapper.selectById(postId);
     }
 
@@ -78,34 +78,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public IPage<Post> getUserPosts(Integer userId, int page, int size) {
+    public IPage<Post> getUserPosts(Long userId, int page, int size) {
         Page<Post> pageInfo = new Page<>(page, size);
         return postMapper.getUserPosts(pageInfo, userId);
     }
 
     @Override
-    public boolean auditPost(Integer postId, Integer auditStatus, String rejectReason) {
+    public boolean auditPost(Long postId, Integer auditStatus, String rejectReason) {
         int result = postMapper.auditPost(postId, auditStatus, rejectReason);
         return result > 0;
-    }
-
-    @Override
-    public boolean likePost(Integer postId, Integer userId) {
-        Post post = postMapper.selectById(postId);
-        if (post == null) {
-            throw new RuntimeException("Post not found");
-        }
-        
-        // Check if already liked by this user
-        int liked = postMapper.checkUserLike(postId, userId);
-        if (liked > 0) {
-            throw new RuntimeException("Already liked this post");
-        }
-        
-        // Add like record
-        postMapper.insertUserLike(postId, userId);
-        
-        // Increment post like count
-        return postMapper.incrementLikeCount(postId) > 0;
     }
 }

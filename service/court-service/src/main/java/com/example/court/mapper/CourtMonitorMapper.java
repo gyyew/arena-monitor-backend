@@ -22,13 +22,13 @@ public interface CourtMonitorMapper extends BaseMapper<CourtMonitor> {
     /**
      * 获取场地最新的监测数据
      */
-    CourtMonitor getLatestByCourtId(@Param("courtId") Integer courtId);
+    CourtMonitor getLatestByCourtId(@Param("courtId") Long courtId);
 
     /**
      * 分页查询场地历史监测数据
      */
     IPage<CourtMonitor> getHistoryByCourtId(Page<CourtMonitor> page, 
-                                           @Param("courtId") Integer courtId, 
+                                           @Param("courtId") Long courtId, 
                                            @Param("startTime") LocalDateTime startTime, 
                                            @Param("endTime") LocalDateTime endTime);
 

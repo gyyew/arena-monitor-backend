@@ -5,11 +5,11 @@ import com.example.post.entity.Comment;
 
 public interface CommentService {
 
-    Comment createComment(Integer postId, Integer userId, String content);
+    Comment createComment(Long postId, Long userId, String content);
 
-    boolean deleteComment(Integer commentId, Integer userId);
+    boolean deleteComment(Long commentId, Long userId);
 
-    IPage<Comment> getCommentsByPostId(Integer postId, int page, int size);
+    IPage<Comment> getCommentsByPostId(Long postId, int page, int size);
 
-    IPage<Comment> getUserComments(Integer userId, int page, int size);
+    IPage<Comment> getUserComments(Long userId, int page, int size);
 }

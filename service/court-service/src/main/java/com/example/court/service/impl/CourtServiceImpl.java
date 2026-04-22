@@ -28,7 +28,7 @@ public class CourtServiceImpl implements CourtService {
     }
 
     @Override
-    public Court getCourtById(Integer courtId) {
+    public Court getCourtById(Long courtId) {
         return courtMapper.selectById(courtId);
     }
 
@@ -39,7 +39,7 @@ public class CourtServiceImpl implements CourtService {
     }
 
     @Override
-    public Court updateCourt(Integer courtId, Court court) {
+    public Court updateCourt(Long courtId, Court court) {
         Court existingCourt = courtMapper.selectById(courtId);
         if (existingCourt == null) {
             throw new RuntimeException("Court not found: " + courtId);
@@ -50,17 +50,17 @@ public class CourtServiceImpl implements CourtService {
     }
 
     @Override
-    public boolean deleteCourt(Integer courtId) {
+    public boolean deleteCourt(Long courtId) {
         return courtMapper.deleteById(courtId) > 0;
     }
 
     @Override
-    public CourtMonitor getLatestMonitorData(Integer courtId) {
+    public CourtMonitor getLatestMonitorData(Long courtId) {
         return courtMonitorMapper.getLatestByCourtId(courtId);
     }
 
     @Override
-    public IPage<CourtMonitor> getHistoryMonitorData(Integer courtId, LocalDateTime startTime, LocalDateTime endTime, int page, int size) {
+    public IPage<CourtMonitor> getHistoryMonitorData(Long courtId, LocalDateTime startTime, LocalDateTime endTime, int page, int size) {
         Page<CourtMonitor> pageInfo = new Page<>(page, size);
         return courtMonitorMapper.getHistoryByCourtId(pageInfo, courtId, startTime, endTime);
     }

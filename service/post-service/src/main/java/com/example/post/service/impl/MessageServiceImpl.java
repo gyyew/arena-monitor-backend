@@ -17,7 +17,7 @@ public class MessageServiceImpl implements MessageService {
     private final MessageMapper messageMapper;
 
     @Override
-    public Message sendMessage(Integer sendUserId, Integer receiveUserId, String content) {
+    public Message sendMessage(Long sendUserId, Long receiveUserId, String content) {
         Message message = new Message();
         message.setSendUserId(sendUserId);
         message.setReceiveUserId(receiveUserId);
@@ -30,36 +30,36 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public IPage<Message> getUserMessages(Integer userId, Integer otherUserId, int page, int size) {
+    public IPage<Message> getUserMessages(Long userId, Long otherUserId, int page, int size) {
         Page<Message> pageInfo = new Page<>(page, size);
         return messageMapper.getUserMessages(pageInfo, userId, otherUserId);
     }
 
     @Override
-    public int getUnreadMessageCount(Integer userId) {
+    public int getUnreadMessageCount(Long userId) {
         return messageMapper.getUnreadMessageCount(userId);
     }
 
     @Override
-    public boolean markMessageAsRead(Integer messageId) {
+    public boolean markMessageAsRead(Long messageId) {
         int result = messageMapper.markMessageAsRead(messageId);
         return result > 0;
     }
 
     @Override
-    public boolean markAllMessagesAsRead(Integer userId, Integer otherUserId) {
+    public boolean markAllMessagesAsRead(Long userId, Long otherUserId) {
         int result = messageMapper.markAllMessagesAsRead(userId, otherUserId);
         return result > 0;
     }
 
     @Override
-    public boolean deleteMessage(Integer messageId) {
+    public boolean deleteMessage(Long messageId) {
         int result = messageMapper.deleteMessage(messageId);
         return result > 0;
     }
 
     @Override
-    public List<Message> getConversationList(Integer userId) {
+    public List<Message> getConversationList(Long userId) {
         return messageMapper.getConversationList(userId);
     }
 }

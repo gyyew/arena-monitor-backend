@@ -13,15 +13,6 @@ import org.apache.ibatis.annotations.Update;
 import java.util.List;
 
 @Mapper
-
-/**
- * <p>
- *  Mapper 接口
- * </p>
- *
- * @author 
- * @since 2024-04-01
- */
 public interface PostMapper extends BaseMapper<Post> {
 
     /**
@@ -35,30 +26,12 @@ public interface PostMapper extends BaseMapper<Post> {
     /**
      * 查询用户发布的帖子
      */
-    IPage<Post> getUserPosts(Page<Post> page, @Param("userId") Integer userId);
+    IPage<Post> getUserPosts(Page<Post> page, @Param("userId") Long userId);
 
     /**
      * 审核帖子
      */
-    int auditPost(@Param("postId") Integer postId, 
+    int auditPost(@Param("postId") Long postId, 
                  @Param("auditStatus") Integer auditStatus, 
                  @Param("rejectReason") String rejectReason);
-
-    /**
-     * Check if user already liked the post
-     */
-    @Select("SELECT COUNT(*) FROM post_like WHERE post_id = #{postId} AND user_id = #{userId}")
-    int checkUserLike(@Param("postId") Integer postId, @Param("userId") Integer userId);
-
-    /**
-     * Insert user like record
-     */
-    @Insert("INSERT INTO post_like (post_id, user_id, create_time) VALUES (#{postId}, #{userId}, NOW())")
-    int insertUserLike(@Param("postId") Integer postId, @Param("userId") Integer userId);
-
-    /**
-     * Increment post like count
-     */
-    @Update("UPDATE post SET like_count = like_count + 1 WHERE post_id = #{postId}")
-    int incrementLikeCount(@Param("postId") Integer postId);
 }

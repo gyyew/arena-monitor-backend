@@ -12,17 +12,17 @@ public interface CourtService {
 
     List<Court> getAllCourts();
 
-    Court getCourtById(Integer courtId);
+    Court getCourtById(Long courtId);
 
     Court addCourt(Court court);
 
-    Court updateCourt(Integer courtId, Court court);
+    Court updateCourt(Long courtId, Court court);
 
-    boolean deleteCourt(Integer courtId);
+    boolean deleteCourt(Long courtId);
 
-    CourtMonitor getLatestMonitorData(Integer courtId);
+    CourtMonitor getLatestMonitorData(Long courtId);
 
-    IPage<CourtMonitor> getHistoryMonitorData(Integer courtId, LocalDateTime startTime, LocalDateTime endTime, int page, int size);
+    IPage<CourtMonitor> getHistoryMonitorData(Long courtId, LocalDateTime startTime, LocalDateTime endTime, int page, int size);
 
     List<CourtMonitor> getAllLatestMonitorData();
 }

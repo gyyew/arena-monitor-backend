@@ -22,14 +22,14 @@ public class MessageController {
 
     @PostMapping
     public Result<Message> sendMessage(
-            @RequestParam("receiveUserId") Integer receiveUserId,
+            @RequestParam("receiveUserId") Long receiveUserId,
             @RequestParam("content") String content) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || authentication.getPrincipal() == null) {
                 return Result.error(401, "Not authenticated");
             }
-            Integer sendUserId = (Integer) authentication.getPrincipal();
+            Long sendUserId = (Long) authentication.getPrincipal();
             
             Message message = messageService.sendMessage(sendUserId, receiveUserId, content);
             return Result.success(message);
@@ -40,7 +40,7 @@ public class MessageController {
 
     @GetMapping
     public Result<IPage<Message>> getUserMessages(
-            @RequestParam("otherUserId") Integer otherUserId,
+            @RequestParam("otherUserId") Long otherUserId,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "20") int size) {
         try {
@@ -48,7 +48,7 @@ public class MessageController {
             if (authentication == null || authentication.getPrincipal() == null) {
                 return Result.error(401, "Not authenticated");
             }
-            Integer userId = (Integer) authentication.getPrincipal();
+            Long userId = (Long) authentication.getPrincipal();
             
             IPage<Message> messages = messageService.getUserMessages(userId, otherUserId, page, size);
             // 标记消息为已读
@@ -66,7 +66,7 @@ public class MessageController {
             if (authentication == null || authentication.getPrincipal() == null) {
                 return Result.error(401, "Not authenticated");
             }
-            Integer userId = (Integer) authentication.getPrincipal();
+            Long userId = (Long) authentication.getPrincipal();
             
             int count = messageService.getUnreadMessageCount(userId);
             return Result.success(count);
@@ -76,7 +76,7 @@ public class MessageController {
     }
 
     @PutMapping("/{messageId}/read")
-    public Result<String> markMessageAsRead(@PathVariable("messageId") Integer messageId) {
+    public Result<String> markMessageAsRead(@PathVariable("messageId") Long messageId) {
         try {
             boolean success = messageService.markMessageAsRead(messageId);
             if (success) {
@@ -90,13 +90,13 @@ public class MessageController {
     }
 
     @PutMapping("/read/all")
-    public Result<String> markAllMessagesAsRead(@RequestParam("otherUserId") Integer otherUserId) {
+    public Result<String> markAllMessagesAsRead(@RequestParam("otherUserId") Long otherUserId) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || authentication.getPrincipal() == null) {
                 return Result.error(401, "Not authenticated");
             }
-            Integer userId = (Integer) authentication.getPrincipal();
+            Long userId = (Long) authentication.getPrincipal();
             
             boolean success = messageService.markAllMessagesAsRead(userId, otherUserId);
             if (success) {
@@ -110,7 +110,7 @@ public class MessageController {
     }
 
     @DeleteMapping("/{messageId}")
-    public Result<String> deleteMessage(@PathVariable("messageId") Integer messageId) {
+    public Result<String> deleteMessage(@PathVariable("messageId") Long messageId) {
         try {
             boolean success = messageService.deleteMessage(messageId);
             if (success) {
@@ -130,7 +130,7 @@ public class MessageController {
             if (authentication == null || authentication.getPrincipal() == null) {
                 return Result.error(401, "Not authenticated");
             }
-            Integer userId = (Integer) authentication.getPrincipal();
+            Long userId = (Long) authentication.getPrincipal();
             
             List<Message> conversations = messageService.getConversationList(userId);
             return Result.success(conversations);

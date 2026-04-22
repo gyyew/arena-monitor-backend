@@ -20,14 +20,14 @@ public class CommentController {
 
     @PostMapping
     public Result<Comment> createComment(
-            @RequestParam("postId") Integer postId,
+            @RequestParam("postId") Long postId,
             @RequestParam("content") String content) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || authentication.getPrincipal() == null) {
                 return Result.error(401, "Not authenticated");
             }
-            Integer userId = (Integer) authentication.getPrincipal();
+            Long userId = (Long) authentication.getPrincipal();
             
             Comment comment = commentService.createComment(postId, userId, content);
             return Result.success(comment);
@@ -37,13 +37,13 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public Result<String> deleteComment(@PathVariable("commentId") Integer commentId) {
+    public Result<String> deleteComment(@PathVariable("commentId") Long commentId) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || authentication.getPrincipal() == null) {
                 return Result.error(401, "Not authenticated");
             }
-            Integer userId = (Integer) authentication.getPrincipal();
+            Long userId = (Long) authentication.getPrincipal();
             
             boolean success = commentService.deleteComment(commentId, userId);
             if (success) {
@@ -58,7 +58,7 @@ public class CommentController {
 
     @GetMapping("/post/{postId}")
     public Result<IPage<Comment>> getCommentsByPostId(
-            @PathVariable("postId") Integer postId,
+            @PathVariable("postId") Long postId,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
         try {
@@ -71,7 +71,7 @@ public class CommentController {
 
     @GetMapping("/user/{userId}")
     public Result<IPage<Comment>> getUserComments(
-            @PathVariable("userId") Integer userId,
+            @PathVariable("userId") Long userId,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
         try {

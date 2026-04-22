@@ -16,13 +16,13 @@ public class Comment implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "comment_id", type = IdType.AUTO)
-    private Integer commentId;
+    private Long commentId;
 
     @TableField("post_id")
-    private Integer postId;
+    private Long postId;
 
     @TableField("user_id")
-    private Integer userId;
+    private Long userId;
 
     @TableField("content")
     private String content;

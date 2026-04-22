@@ -30,7 +30,7 @@ public class PostController {
      * @param authorization Authorization header with Bearer token
      * @return userId if token is valid, null otherwise
      */
-    private Integer validateAndGetUserId(String authorization) {
+    private Long validateAndGetUserId(String authorization) {
         if (authorization == null || authorization.isEmpty()) {
             return null;
         }
@@ -62,7 +62,7 @@ public class PostController {
             @RequestParam("sportType") String sportType,
             @RequestParam(value = "imageUrls", required = false) String imageUrls) {
         try {
-            Integer userId = validateAndGetUserId(authorization);
+            Long userId = validateAndGetUserId(authorization);
             if (userId == null) {
                 return Result.error(401, "Invalid or missing authentication token");
             }
@@ -87,13 +87,13 @@ public class PostController {
     @PutMapping("/{postId}")
     public Result<Post> updatePost(
             @RequestHeader(value = "Authorization", required = false) String authorization,
-            @PathVariable("postId") Integer postId,
+            @PathVariable("postId") Long postId,
             @RequestParam("title") String title,
             @RequestParam("content") String content,
             @RequestParam("sportType") String sportType,
             @RequestParam(value = "imageUrls", required = false) String imageUrls) {
         try {
-            Integer userId = validateAndGetUserId(authorization);
+            Long userId = validateAndGetUserId(authorization);
             if (userId == null) {
                 return Result.error(401, "Invalid or missing authentication token");
             }
@@ -114,9 +114,9 @@ public class PostController {
     @DeleteMapping("/{postId}")
     public Result<String> deletePost(
             @RequestHeader(value = "Authorization", required = false) String authorization,
-            @PathVariable("postId") Integer postId) {
+            @PathVariable("postId") Long postId) {
         try {
-            Integer userId = validateAndGetUserId(authorization);
+            Long userId = validateAndGetUserId(authorization);
             if (userId == null) {
                 return Result.error(401, "Invalid or missing authentication token");
             }
@@ -133,7 +133,7 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    public Result<Post> getPostById(@PathVariable("postId") Integer postId) {
+    public Result<Post> getPostById(@PathVariable("postId") Long postId) {
         try {
             Post post = postService.getPostById(postId);
             if (post == null) {
@@ -160,36 +160,9 @@ public class PostController {
         }
     }
 
-    /**
-     * Like a post - toggle like status
-     * @param authorization Authorization header with Bearer token
-     * @param postId post ID to like/unlike
-     * @return result with like status message
-     */
-    @PostMapping("/{postId}/like")
-    public Result<String> likePost(
-            @RequestHeader(value = "Authorization", required = false) String authorization,
-            @PathVariable("postId") Integer postId) {
-        try {
-            Integer userId = validateAndGetUserId(authorization);
-            if (userId == null) {
-                return Result.error(401, "Invalid or missing authentication token");
-            }
-
-            boolean success = postService.likePost(postId, userId);
-            if (success) {
-                return Result.success("Liked successfully");
-            } else {
-                return Result.success("Unliked successfully");
-            }
-        } catch (RuntimeException e) {
-            return Result.error(400, e.getMessage());
-        }
-    }
-
     @GetMapping("/user/{userId}")
     public Result<IPage<Post>> getUserPosts(
-            @PathVariable("userId") Integer userId,
+            @PathVariable("userId") Long userId,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
         try {
@@ -202,7 +175,7 @@ public class PostController {
 
     @PutMapping("/admin/audit/{postId}")
     public Result<String> auditPost(
-            @PathVariable("postId") Integer postId,
+            @PathVariable("postId") Long postId,
             @RequestParam("auditStatus") Integer auditStatus,
             @RequestParam(value = "rejectReason", required = false) String rejectReason) {
         try {

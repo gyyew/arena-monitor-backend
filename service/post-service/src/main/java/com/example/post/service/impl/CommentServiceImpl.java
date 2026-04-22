@@ -15,7 +15,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentMapper commentMapper;
 
     @Override
-    public Comment createComment(Integer postId, Integer userId, String content) {
+    public Comment createComment(Long postId, Long userId, String content) {
         Comment comment = new Comment();
         comment.setPostId(postId);
         comment.setUserId(userId);
@@ -27,7 +27,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public boolean deleteComment(Integer commentId, Integer userId) {
+    public boolean deleteComment(Long commentId, Long userId) {
         Comment comment = commentMapper.selectById(commentId);
         if (comment == null) {
             throw new RuntimeException("Comment not found");
@@ -42,13 +42,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public IPage<Comment> getCommentsByPostId(Integer postId, int page, int size) {
+    public IPage<Comment> getCommentsByPostId(Long postId, int page, int size) {
         Page<Comment> pageInfo = new Page<>(page, size);
         return commentMapper.getCommentsByPostId(pageInfo, postId);
     }
 
     @Override
-    public IPage<Comment> getUserComments(Integer userId, int page, int size) {
+    public IPage<Comment> getUserComments(Long userId, int page, int size) {
         Page<Comment> pageInfo = new Page<>(page, size);
         return commentMapper.getUserComments(pageInfo, userId);
     }

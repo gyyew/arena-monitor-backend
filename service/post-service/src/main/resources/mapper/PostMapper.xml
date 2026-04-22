@@ -2,7 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.post.mapper.PostMapper">
 
-    <!-- 帖子结果映射 -->
     <resultMap id="BaseResultMap" type="com.example.post.entity.Post">
         <id column="post_id" property="postId" />
         <result column="user_id" property="userId" />
@@ -14,21 +13,19 @@
         <result column="reject_reason" property="rejectReason" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
-        <result column="like_count" property="likeCount" />
+        <result column="deleted" property="deleted" />
     </resultMap>
 
-    <!-- 根据ID查询帖子 -->
     <select id="getPostById" resultMap="BaseResultMap">
         SELECT post_id, user_id, title, content, sport_type, image_urls,
-               audit_status, reject_reason, create_time, update_time, like_count
+               audit_status, reject_reason, create_time, update_time, deleted
         FROM post
         WHERE post_id = #{postId}
     </select>
 
-    <!-- 分页查询帖子列表 -->
     <select id="getPostList" resultMap="BaseResultMap">
         SELECT post_id, user_id, title, content, sport_type, image_urls,
-               audit_status, reject_reason, create_time, update_time, like_count
+               audit_status, reject_reason, create_time, update_time, deleted
         FROM post
         <where>
             <if test="sportType != null and sportType != ''">
@@ -44,16 +41,14 @@
         ORDER BY create_time DESC
     </select>
 
-    <!-- 查询用户发布的帖子 -->
     <select id="getUserPosts" resultMap="BaseResultMap">
         SELECT post_id, user_id, title, content, sport_type, image_urls,
-               audit_status, reject_reason, create_time, update_time, like_count
+               audit_status, reject_reason, create_time, update_time, deleted
         FROM post
         WHERE user_id = #{userId}
         ORDER BY create_time DESC
     </select>
 
-    <!-- 审核帖子 -->
     <update id="auditPost">
         UPDATE post 
         SET audit_status = #{auditStatus}, 
@@ -61,13 +56,11 @@
         WHERE post_id = #{postId}
     </update>
 
-    <!-- 插入帖子 -->
     <insert id="insertPost" parameterType="com.example.post.entity.Post" useGeneratedKeys="true" keyProperty="postId">
         INSERT INTO post (user_id, title, content, sport_type, image_urls, audit_status, create_time, update_time)
         VALUES (#{userId}, #{title}, #{content}, #{sportType}, #{imageUrls}, #{auditStatus}, NOW(), NOW())
     </insert>
 
-    <!-- 更新帖子 -->
     <update id="updatePost" parameterType="com.example.post.entity.Post">
         UPDATE post 
         SET title = #{title}, 
@@ -78,7 +71,6 @@
         WHERE post_id = #{postId}
     </update>
 
-    <!-- 删除帖子 -->
     <delete id="deletePost">
         DELETE FROM post WHERE post_id = #{postId}
     </delete>
