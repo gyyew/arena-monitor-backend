@@ -1,6 +1,8 @@
-package com.example.user.util;
+package com.example.gateway.util;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -8,11 +10,12 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * JWT Utility class for token generation and validation
+ * JWT Utility class for token validation in Gateway
+ * 
+ * This class is duplicated from user-service to avoid dependencies.
+ * Used for verifying JWT tokens in the authentication filter.
  */
 @Component
 public class JwtUtil {
@@ -21,31 +24,13 @@ public class JwtUtil {
     private String secret;
 
     @Value("${jwt.expiration:86400000}")
-    private Long expiration; // 24 hours in milliseconds
-
-    /**
-     * Generate JWT token with userId, nickname and role claims
-     */
-    public String generateToken(Long userId, String nickname, Integer role) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", userId);
-        claims.put("nickname", nickname);
-        claims.put("role", role);
-
-        Date now = new Date();
-        Date expirationDate = new Date(now.getTime() + expiration);
-
-        return Jwts.builder()
-                .claims(claims)
-                .subject(nickname)
-                .issuedAt(now)
-                .expiration(expirationDate)
-                .signWith(getSigningKey())
-                .compact();
-    }
+    private Long expiration;
 
     /**
      * Validate and parse JWT token
+     * 
+     * @param token JWT token string
+     * @return Claims if valid, throws JwtException if invalid
      */
     public Claims parseToken(String token) {
         return Jwts.parser()
@@ -56,28 +41,30 @@ public class JwtUtil {
     }
 
     /**
-     * Extract nickname from token
-     */
-    public String getNicknameFromToken(String token) {
-        return parseToken(token).getSubject();
-    }
-
-    /**
      * Extract userId from token
+     * 
+     * @param token JWT token string
+     * @return userId integer
      */
-    public Long getUserIdFromToken(String token) {
-        return parseToken(token).get("userId", Long.class);
+    public Integer getUserIdFromToken(String token) {
+        return parseToken(token).get("userId", Integer.class);
     }
 
     /**
      * Extract role from token
+     * 
+     * @param token JWT token string
+     * @return role integer
      */
     public Integer getRoleFromToken(String token) {
         return parseToken(token).get("role", Integer.class);
     }
 
     /**
-     * Validate token - check if expired
+     * Validate token - check if expired and signature is valid
+     * 
+     * @param token JWT token string
+     * @return true if valid, false otherwise
      */
     public boolean validateToken(String token) {
         try {
@@ -90,6 +77,8 @@ public class JwtUtil {
 
     /**
      * Get signing key from secret
+     * 
+     * @return SecretKey for signing/verification
      */
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));

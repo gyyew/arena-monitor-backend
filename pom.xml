@@ -13,6 +13,7 @@
     <description>Microservice Backend Project</description>
 
     <modules>
+        <module>common/common-api</module>
         <module>common/common-core</module>
         <module>common/common-datasource</module>
         <module>common/common-feign</module>
@@ -22,6 +23,7 @@
         <module>service/user-service</module>
         <module>service/court-service</module>
         <module>service/post-service</module>
+        <module>infrastructure/gateway</module>
     </modules>
 
     <properties>

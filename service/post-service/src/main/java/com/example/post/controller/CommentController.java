@@ -1,7 +1,7 @@
 package com.example.post.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.example.post.common.Result;
+import com.example.common.api.Result;
 import com.example.post.entity.Comment;
 import com.example.post.service.CommentService;
 import lombok.RequiredArgsConstructor;

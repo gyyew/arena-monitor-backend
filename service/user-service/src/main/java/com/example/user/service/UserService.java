@@ -5,19 +5,19 @@ import com.example.user.entity.User;
 
 public interface UserService {
 
-    User register(String phone, String password, String nickname);
+    User register(String username, String phone, String password);
 
-    String login(String phone, String password);
+    String login(String username, String password);
 
     User findByPhone(String phone);
 
-    User findByUserId(Integer userId);
+    User findByUserId(Long userId);
 
-    User updateUserInfo(Integer userId, String nickname, String avatar, String sportPreference, String intro);
+    User updateUserInfo(Long userId, String nickname, String avatar, String sportPreference, String intro);
 
-    boolean changePassword(Integer userId, String oldPassword, String newPassword);
+    boolean changePassword(Long userId, String oldPassword, String newPassword);
 
-    boolean disableUser(Integer userId, Integer status);
+    boolean disableUser(Long userId, Integer status);
 
     /**
      * Get user list with pagination and search
@@ -34,5 +34,5 @@ public interface UserService {
      * @param userId user ID to delete
      * @return true if deleted successfully
      */
-    boolean deleteUser(Integer userId);
+    boolean deleteUser(Long userId);
 }

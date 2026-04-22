@@ -1,8 +1,8 @@
 package com.example.post.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.example.post.common.Result;
-import com.example.post.common.UserResult;
+import com.example.common.api.Result;
+import com.example.common.api.UserResult;
 import com.example.post.dto.VerifyResponse;
 import com.example.post.entity.Post;
 import com.example.post.feign.UserServiceClient;

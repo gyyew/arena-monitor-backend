@@ -1,8 +1,5 @@
 package com.example.post.feign.config;
 
-import com.example.post.common.UserResult;
-import com.example.post.dto.VerifyResponse;
-import com.example.post.feign.UserServiceClient;
 import feign.Logger;
 import feign.Request;
 import org.springframework.context.annotation.Bean;

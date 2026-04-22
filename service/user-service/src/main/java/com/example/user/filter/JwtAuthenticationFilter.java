@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Parse token and set security context
             Claims claims = jwtUtil.parseToken(token);
             String nickname = claims.getSubject();
-            Integer userId = claims.get("userId", Integer.class);
+            Long userId = claims.get("userId", Long.class);
             Integer role = claims.get("role", Integer.class);
             
             // Create authentication token with user details and role

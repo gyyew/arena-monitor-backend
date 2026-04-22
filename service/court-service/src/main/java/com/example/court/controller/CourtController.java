@@ -1,7 +1,7 @@
 package com.example.court.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.example.court.common.Result;
+import com.example.common.api.Result;
 import com.example.court.entity.Court;
 import com.example.court.entity.CourtMonitor;
 import com.example.court.service.CourtService;

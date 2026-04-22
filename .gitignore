@@ -20,3 +20,5 @@ Thumbs.db
 **/target/
 **/.idea/
 backend/**/*.log
+mysql/data/
+nacos/data/

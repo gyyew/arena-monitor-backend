@@ -1,6 +1,6 @@
 package com.example.post.feign;
 
-import com.example.post.common.UserResult;
+import com.example.common.api.UserResult;
 import com.example.post.dto.VerifyResponse;
 import com.example.post.feign.config.UserServiceFeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;

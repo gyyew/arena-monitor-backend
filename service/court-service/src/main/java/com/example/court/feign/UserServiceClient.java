@@ -1,6 +1,6 @@
 package com.example.court.feign;
 
-import com.example.court.common.UserResult;
+import com.example.common.api.UserResult;
 import com.example.court.dto.VerifyResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

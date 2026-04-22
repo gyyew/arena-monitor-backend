@@ -15,13 +15,18 @@ services:
     networks:
       - my-cloud
     volumes:
-      - ./sql:/docker-entrypoint-initdb.d
+      - ./sql/init_database.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./mysql/data:/var/lib/mysql  # 数据持久化
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
-    command: --default-authentication-plugin=mysql_native_password
+    command:
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    restart: always  # 自动重启
 
   nacos:
     image: nacos/nacos-server:v2.4.0
@@ -46,27 +51,20 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    volumes:
+      - ./nacos/logs:/home/nacos/logs
+      - ./nacos/data:/home/nacos/data
+    restart: always
 
-  seata:
-    image: seataio/seata-server:2.0.0
-    container_name: seata
-    environment:
-      SEATA_IP: seata
-      SEATA_PORT: 8091
-      STORE_MODE: db
-      NACOS_APPLICATION: seata-server
-      NACOS_URL: nacos:8848
-      NACOS_NAMESPACE: ""
-      NACOS_GROUP: SEATA_GROUP
-      MYSQL_SERVICE_HOST: mysql
-      MYSQL_SERVICE_PORT: 3306
-      MYSQL_SERVICE_DB_NAME: seata_server
-      MYSQL_SERVICE_USER: root
-      MYSQL_SERVICE_PASSWORD: root
+  nginx:
+    image: nginx:latest
+    container_name: nginx
     ports:
-      - "8091:8091"
-      - "7091:7091"
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
       - my-cloud
     depends_on:
       - nacos
+    restart: always

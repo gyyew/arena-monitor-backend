@@ -2,7 +2,7 @@ package com.example.user.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.user.common.Result;
+import com.example.common.api.Result;
 import com.example.user.dto.VerifyResponse;
 import com.example.user.entity.User;
 import com.example.user.service.UserService;
@@ -27,11 +27,11 @@ public class UserController {
 
     @PostMapping("/register")
     public Result<User> register(
+            @RequestParam("username") @NotBlank String username,
             @RequestParam("phone") @NotBlank String phone,
-            @RequestParam("password") @NotBlank String password,
-            @RequestParam("nickname") @NotBlank String nickname) {
+            @RequestParam("password") @NotBlank String password) {
         try {
-            User user = userService.register(phone, password, nickname);
+            User user = userService.register(username, phone, password);
             return Result.success(user);
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
@@ -40,10 +40,10 @@ public class UserController {
 
     @PostMapping("/login")
     public Result<String> login(
-            @RequestParam("phone") @NotBlank String phone,
+            @RequestParam("username") @NotBlank String username,
             @RequestParam("password") @NotBlank String password) {
         try {
-            String token = userService.login(phone, password);
+            String token = userService.login(username, password);
             return Result.success(token);
         } catch (RuntimeException e) {
             String msg = e.getMessage();
@@ -90,7 +90,7 @@ public class UserController {
 
         try {
             // Extract user information from token
-            Integer userId = jwtUtil.getUserIdFromToken(token);
+            Long userId = jwtUtil.getUserIdFromToken(token);
             String nickname = jwtUtil.getNicknameFromToken(token);
             Integer role = jwtUtil.getRoleFromToken(token);
 
@@ -112,7 +112,7 @@ public class UserController {
     public Result<User> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() != null) {
-            Integer userId = (Integer) authentication.getPrincipal();
+            Long userId = (Long) authentication.getPrincipal();
             User user = userService.findByUserId(userId);
             if (user == null) {
                 return Result.error(404, "User not found");
@@ -134,7 +134,7 @@ public class UserController {
             if (authentication == null || authentication.getPrincipal() == null) {
                 return Result.error(401, "Not authenticated");
             }
-            Integer userId = (Integer) authentication.getPrincipal();
+            Long userId = (Long) authentication.getPrincipal();
             User user = userService.updateUserInfo(userId, nickname, avatar, sportPreference, intro);
             return Result.success(user);
         } catch (RuntimeException e) {
@@ -151,7 +151,7 @@ public class UserController {
             if (authentication == null || authentication.getPrincipal() == null) {
                 return Result.error(401, "Not authenticated");
             }
-            Integer userId = (Integer) authentication.getPrincipal();
+            Long userId = (Long) authentication.getPrincipal();
             boolean success = userService.changePassword(userId, oldPassword, newPassword);
             if (success) {
                 return Result.success("Password changed successfully");
@@ -165,7 +165,7 @@ public class UserController {
 
     @PutMapping("/admin/disable/{userId}")
     public Result<String> disableUser(
-            @PathVariable("userId") Integer userId,
+            @PathVariable("userId") Long userId,
             @RequestParam("status") Integer status) {
         try {
             boolean success = userService.disableUser(userId, status);
@@ -180,7 +180,7 @@ public class UserController {
     }
 
     @GetMapping("/admin/{userId}")
-    public Result<User> getUserById(@PathVariable("userId") Integer userId) {
+    public Result<User> getUserById(@PathVariable("userId") Long userId) {
         try {
             User user = userService.findByUserId(userId);
             if (user == null) {
@@ -223,7 +223,7 @@ public class UserController {
      * @return success message
      */
     @DeleteMapping("/admin/{userId}")
-    public Result<String> deleteUser(@PathVariable("userId") Integer userId) {
+    public Result<String> deleteUser(@PathVariable("userId") Long userId) {
         try {
             boolean success = userService.deleteUser(userId);
             if (success) {

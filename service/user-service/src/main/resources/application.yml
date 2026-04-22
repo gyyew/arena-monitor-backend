@@ -9,9 +9,13 @@ server:
 spring:
   application:
     name: user-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/micro_user?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&connectionCharacterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/user_service?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&connectionCharacterEncoding=UTF-8
     username: root
     password: root
 
@@ -26,16 +30,6 @@ mybatis-plus:
       logic-delete-field: deleted
       logic-delete-value: 1
       logic-not-delete-value: 0
-
-spring.cloud.nacos.discovery:
-  server-addr: localhost:8848
-  namespace: ''
-  group: DEFAULT_GROUP
-
-spring.cloud.nacos.config:
-  server-addr: localhost:8848
-  namespace: ''
-  group: DEFAULT_GROUP
 
 # JWT Configuration
 jwt:

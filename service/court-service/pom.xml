@@ -23,6 +23,11 @@
             <artifactId>common-core</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>common-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
         <!-- Feign client for inter-service communication -->
         <dependency>
